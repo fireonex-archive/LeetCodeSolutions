@@ -4,31 +4,24 @@ function countValidWords(sentence: string): number {
     let validCount = 0;
 
     const validCharsRegex = /^[a-z\-!.,]+$/;
-    const lowercaseRegex = /[a-z]/;
     const hyphenRegex = /-/g;
-    const punctuationRegex = /[!.,]/g;
+    const punctuationRegex = /[!.,]$/;
 
     for (const word of words) {
         if (!validCharsRegex.test(word)) continue;
 
         const hyphenMatches = word.match(hyphenRegex);
-        if (hyphenMatches && hyphenMatches.length > 1) continue;
-
-        if (hyphenMatches?.length === 1) {
+        if (hyphenMatches) {
+            if (hyphenMatches.length > 1) continue;
             const hyphenIndex = word.indexOf('-');
-            const prevChar = word[hyphenIndex - 1];
-            const nextChar = word[hyphenIndex + 1];
-            if (!(lowercaseRegex.test(prevChar) && lowercaseRegex.test(nextChar))) {
-                continue;
-            }
+            if (hyphenIndex === 0 || hyphenIndex === word.length - 1) continue;
+            if (!/[a-z]/.test(word[hyphenIndex - 1]) || !/[a-z]/.test(word[hyphenIndex + 1])) continue;
         }
 
-        const punctuationMatches = word.match(punctuationRegex);
-        if (punctuationMatches && punctuationMatches.length > 1) continue;
-
-        if (punctuationMatches?.length === 1) {
-            const lastChar = word[word.length - 1];
-            if (!punctuationRegex.test(lastChar)) continue;
+        const punctuationMatches = word.match(/[!.,]/g);
+        if (punctuationMatches) {
+            if (punctuationMatches.length > 1) continue;
+            if (!punctuationRegex.test(word)) continue;
         }
 
         validCount++;
